@@ -1,0 +1,31 @@
+name: Docker
+
+on:
+  push
+  # push:
+    # tags:
+      # - '*'
+
+env:
+  IMAGE_NAME: emulator
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: build docker
+        run: |
+          docker build . --file Dockerfile --tag emulator
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest 
+    steps:
+      - uses: actions/checkout@v2
+      - name: deploy image
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: degawong/emulator
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          tags: "latest, ndk_21"
